@@ -2,4 +2,6 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <include file="classpath:liquibase/db.changelog-1.1.xml"/>
+    <include file="classpath:liquibase/schema/tables_update/books_change.xml"/>
 </databaseChangeLog>
