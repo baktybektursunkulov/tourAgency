@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:12-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: "tourAgency"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
