@@ -3,11 +3,12 @@ package com.example.touragency.service;
 
 
 import com.example.touragency.model.User;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
-
+@Service
 public interface UserService {
 
     User register(User user);

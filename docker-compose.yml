@@ -11,4 +11,14 @@ services:
       POSTGRES_DB: "tourAgency"
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-
+  tour-agency:
+    image: touragency-tour-agency
+    ports:
+      - "8075:8075"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DATASOURCE_URL=jdbc:postgresql://postgres:5432/tourAgency?serverTimezone=UTC
+      - TOKEN_SECRET=jwtappdemo
+      - TOKEN_EXPIRED=3600000
