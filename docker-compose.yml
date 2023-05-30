@@ -22,3 +22,7 @@ services:
       - DATASOURCE_URL=jdbc:postgresql://postgres:5432/tourAgency?serverTimezone=UTC
       - TOKEN_SECRET=jwtappdemo
       - TOKEN_EXPIRED=3600000
+  tour-agency-front:
+    image: tour_agency/front
+    ports:
+      - "3000:3000"
