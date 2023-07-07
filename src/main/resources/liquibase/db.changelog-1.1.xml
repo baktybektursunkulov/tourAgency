@@ -30,6 +30,9 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="activatorCode" type="VARCHAR(255)">
+            </column>
+
             <column name="created" type="TIMESTAMP WITHOUT TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>

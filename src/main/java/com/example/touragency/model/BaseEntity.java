@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 
 @MappedSuperclass
@@ -18,11 +19,11 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(name = "created")
-    private LocalDateTime created;
+    private ZonedDateTime created;
 
     @LastModifiedDate
     @Column(name = "updated")
-    private LocalDateTime updated;
+    private ZonedDateTime updated;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")

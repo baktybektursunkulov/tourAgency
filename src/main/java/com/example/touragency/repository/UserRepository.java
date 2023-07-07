@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying(clearAutomatically = true)
     @Query(nativeQuery = true,value = "UPDATE users SET password = ?2 WHERE id=?1")
     void updatePassword(Long id, String password);
+
+    User findByActivatorCode(String code);
 }

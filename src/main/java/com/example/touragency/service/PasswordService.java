@@ -4,6 +4,7 @@ package com.example.touragency.service;
 import com.example.touragency.model.Password_Reset_Token;
 import com.example.touragency.model.User;
 import com.example.touragency.repository.Password_Reset_TokenRepository;
+import liquibase.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class PasswordService {
     private Password_Reset_TokenRepository Password_Reset_TokenRepository;
 
     @Autowired
-    private EmailService emailService;
+    private MailSenderService mailSenderService;
 
     private static final int EXPIRATION = 60 * 24;
 
@@ -36,7 +37,7 @@ public class PasswordService {
         Password_Reset_TokenRepository.saveToken(user,token,timestamp);
     }
 
-    public void sendPasswordResetEmail(User user) throws MessagingException, IOException {
+    public void sendPasswordResetEmail(User user) {
         Password_Reset_Token password_Reset_Token = getPassword_Reset_Token(user.getId());
         if (password_Reset_Token == null) {
             throw new IllegalStateException("Password reset token not found");
@@ -45,7 +46,7 @@ public class PasswordService {
         String subject = "Password reset request";
         String message = "Please click on the following link to reset your password: "
                 + "http://localhost:3000/reset-password?token=" + password_Reset_Token.getToken();
-        emailService.sendEmail(recipientAddress, subject, message);
+        mailSenderService.sendEmail(recipientAddress, subject, message);
     }
 
     public Password_Reset_Token getPassword_Reset_Token(Long user) {

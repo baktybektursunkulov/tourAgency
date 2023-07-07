@@ -5,7 +5,9 @@ import com.example.touragency.model.Status;
 import com.example.touragency.model.User;
 import com.example.touragency.repository.RoleRepository;
 import com.example.touragency.repository.UserRepository;
+import com.example.touragency.service.MailSenderService;
 import com.example.touragency.service.UserService;
+import liquibase.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,18 +16,21 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.UUID;
 
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    private  RoleRepository roleRepository;
+    private RoleRepository roleRepository;
     @Autowired
-    private  BCryptPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MailSenderService mailSenderService;
 
 
     @Override
@@ -39,11 +44,38 @@ public class UserServiceImpl implements UserService {
         user.setStatus(Status.ACTIVE);
         user.setCreated(LocalDateTime.now());
         user.setUpdated(LocalDateTime.now());
+        user.setActivatorCode(UUID.randomUUID().toString());
         User registeredUser = userRepository.save(user);
 
+        sendMessage(user);
         log.info("IN register - user: {} successfully registered", registeredUser);
 
         return registeredUser;
+    }
+
+    public void sendMessage(User user) {
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            String message = String.format(
+                    "Hello, %s! \n" +
+                            "Welcome to Sweater. Please, visit next link: localhost:3000/activate/%s",
+                    user.getUsername(),
+                    user.getActivatorCode()
+            );
+
+            mailSenderService.sendEmail(user.getEmail(), "Activation code", message);
+        }
+    }
+
+    @Override
+    public boolean activateUser(String code) {
+        User user = userRepository.findByActivatorCode(code);
+
+        if (user == null) {
+            return false;
+        }
+        user.setActivatorCode(null);
+        userRepository.save(user);
+        return true;
     }
 
     @Override
@@ -86,6 +118,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(Long user, String password) {
-        userRepository.updatePassword(user,passwordEncoder.encode(password));
+        userRepository.updatePassword(user, passwordEncoder.encode(password));
     }
 }

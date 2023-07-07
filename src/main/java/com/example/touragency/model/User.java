@@ -3,6 +3,7 @@ package com.example.touragency.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 
@@ -30,9 +31,17 @@ public class User extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "activatorCode")
+    private String activatorCode;
+
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
+
+    public boolean isExpired(Date currentTime) {
+        return ((getUpdated().toInstant().toEpochMilli()+86400000) - currentTime.getTime()) < 0;
+    }
 }

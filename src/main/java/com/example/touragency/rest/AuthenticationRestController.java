@@ -2,6 +2,7 @@ package com.example.touragency.rest;
 
 
 import com.example.touragency.dto.AuthorizationRequestDto;
+import com.example.touragency.model.Password_Reset_Token;
 import com.example.touragency.model.User;
 import com.example.touragency.security.jwt.JwtTokenProvider;
 import com.example.touragency.service.UserService;
@@ -12,11 +13,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,16 +40,25 @@ public class AuthenticationRestController {
     @PostMapping("logup")
     public ResponseEntity register(@RequestBody User requestDto) {
         try {
-            User user = new User();
-            user.setUsername(requestDto.getUsername());
-            user.setEmail(requestDto.getEmail());
-            user.setFirstName(requestDto.getFirstName());
-            user.setLastName(requestDto.getLastName());
+            User user = userService.findByUsername(requestDto.getUsername());
+            if (user!=null&&user.getActivatorCode()==null&& user.isExpired(new Date())){
+                  userService.delete(user.getId());
+            }
             userService.register(requestDto);
             return ResponseEntity.ok("USER CREATED");
         } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Error: Username or password is exist");
+            throw new BadCredentialsException("Error: Username or email is exist");
         }
+    }
+
+
+    @GetMapping("/activate")
+    public ResponseEntity<?> resetPassword(@RequestParam("code") String code) {
+        boolean isActivated = userService.activateUser(code);
+        if (!isActivated) {
+            return ResponseEntity.badRequest().body("Activation code is not found!");
+        }
+        return ResponseEntity.ok("User successfully activated");
     }
 
     @PostMapping("login")
