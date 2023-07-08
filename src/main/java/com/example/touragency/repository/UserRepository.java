@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String name);
 
@@ -16,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updatePassword(Long id, String password);
 
     User findByActivatorCode(String code);
+
+    List<User> findAllByActivatorCodeIsNull();
 }

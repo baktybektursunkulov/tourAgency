@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -42,8 +43,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(userRoles);
         user.setStatus(Status.ACTIVE);
-        user.setCreated(LocalDateTime.now());
-        user.setUpdated(LocalDateTime.now());
+        user.setCreated(ZonedDateTime.now());
+        user.setUpdated(ZonedDateTime.now());
         user.setActivatorCode(UUID.randomUUID().toString());
         User registeredUser = userRepository.save(user);
 
@@ -80,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAll() {
-        List<User> result = userRepository.findAll();
+        List<User> result = userRepository.findAllByActivatorCodeIsNull();
         log.info("IN getAll - {} users found", result.size());
         return result;
     }
